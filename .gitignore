@@ -1,3 +1,13 @@
-.DS\_Store
 *.sw?
-
+.~
+*.DS_Store
+*.class
+*.cvs
+*.idea
+*.lock
+*.out
+*.pyc
+*.sqlite3
+*.svn
+thumbs.db
+tmp/*

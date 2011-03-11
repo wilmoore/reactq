@@ -24,11 +24,13 @@ class EventfulTest extends TestCase {
     /**
      * @test
      */
-    public function Can_Subscribe_To_Event() {
-        $eventful     = new Eventful();
-        $subscription = new Subscription('cash', 'accepted', function(){ echo 'nice doing business with you...'; });
-        $eventful->subscribe($subscription);
-        $this->assertEquals('nice', $eventful->subscriptions('cash', 'accepted'));
+    public function Can_Listen_For_Single_Event() {
+        $eventful  = new Eventful();
+        $eventName = 'cash:accepted';
+        $callback  = function(){ echo 'nice doing business with you...'; };
+
+        $eventful->listen($eventName, $callback);
+        //$this->assertEquals('nice', $eventful->subscriptions('cash', 'accepted'));
     }
 
 }
