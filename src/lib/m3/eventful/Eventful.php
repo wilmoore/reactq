@@ -5,4 +5,8 @@
  */
 namespace m3\eventful;
 
-class Eventful {}
+class Eventful {
+
+    public function subscribe() {}
+    public function subscriptions() {}
+}

@@ -5,4 +5,4 @@
  */
 namespace m3\eventful\event;
 
-class Arguments {}
+class Subscription {}
