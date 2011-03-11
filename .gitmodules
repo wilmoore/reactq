@@ -1,0 +1,9 @@
+[submodule "src/lib/vendor/doctrine/common"]
+	path    = src/lib/vendor/doctrine/common
+	url     = git://github.com/doctrine/common.git
+[submodule "src/lib/vendor/twig/core"]
+	path    = src/lib/vendor/twig/core
+	url     = git://github.com/fabpot/Twig.git
+[submodule "src/lib/vendor/symfony"]
+	path = src/lib/vendor/symfony
+	url = git://github.com/symfony/symfony.git
