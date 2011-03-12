@@ -1,11 +1,7 @@
 <?php
 
-/**
- * @namespace
- */
 namespace m3\eventful;
-      use m3\eventful\event\Subscription,
-          PHPUnit_Framework_TestCase as TestCase;
+      use PHPUnit_Framework_TestCase as TestCase;
 
 class EventfulTest extends TestCase {
 
