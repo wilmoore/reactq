@@ -1,5 +1,5 @@
 <?php
 
-namespace m3\eventful;
+namespace m3\reacton;
 
 interface Exception {}
