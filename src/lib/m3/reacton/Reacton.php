@@ -10,6 +10,7 @@ namespace m3\reacton;
           m3\reacton\exception\MethodNotFoundException,
           m3\reacton\exception\UndefinedSelectorException,
           Zend\EventManager\EventManager,
+          Zend\EventManager\ResponseCollection,
           Zend\Stdlib\Exception\InvalidCallbackException,
           Zend\Stdlib\CallbackHandler;
 
@@ -45,6 +46,12 @@ class Reacton {
      * @var EventManager
      */
     private $eventManager       = null;
+
+    /**
+     * @var string
+     *      Class representing the event being emitted
+     */
+    protected $eventClass = 'Zend\EventManager\Event';
 
     /**
      * blocks the use of '$identifier' so as to not support static event management.
@@ -140,7 +147,7 @@ class Reacton {
     }
 
     /**
-     * Trigger all handlers for a given event
+     * Trigger all handlers for a given event.
      *
      * @param   string              $event
      *                              name of the event to be triggered
@@ -157,7 +164,20 @@ class Reacton {
      * @return  ResponseCollection All handler return values
      */
     public function trigger($event, $target, $arguments = array()) {
-        return $this->eventManager->trigger($event, $target, $arguments);
+        $events    = (array) $event;
+        $responses = new ResponseCollection();
+
+        foreach ($events as $event) {
+            $responseCollection = $this->eventManager->triggerUntil($event, $target, $arguments, function(){
+                return false;
+            });
+
+            foreach ($responseCollection as $response) {
+                $responses->push($response);
+            }
+        }
+
+        return $responses;
     }
 
     /**

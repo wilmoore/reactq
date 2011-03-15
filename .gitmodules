@@ -6,4 +6,4 @@
 	url = git://github.com/symfony/symfony.git
 [submodule "src/lib/vendor/zend"]
 	path = src/lib/vendor/zend
-	url = git://github.com/zendframework/zf2.git
+	url = git://github.com/wilmoore/zf2.git
