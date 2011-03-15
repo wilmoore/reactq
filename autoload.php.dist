@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package     reacton
+ * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
+ */
 
 require_once __DIR__.'/src/lib/vendor/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php';
 
@@ -7,6 +11,7 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
     'm3'                             => __DIR__.'/src/lib',
+    'reacton_fixture'                => __DIR__.'/src/test/unit/lib/m3',
     'Symfony'                        => __DIR__.'/src/lib/vendor/symfony/src',
     'Doctrine\\Common'               => __DIR__.'/src/lib/vendor/doctrine/common/lib',
     'Zend'                           => __DIR__.'/src/lib/vendor/zend/library',
