@@ -27,7 +27,7 @@ class Reacton {
      * Perl Compatible Regex Selector Pattern
      * @const
      */
-    const PCRE_SELECTOR_PATTERN = '@^(?<token>\^=|\$=|\*=|~=|!=)?(?<value>[a-z0-9.:_-]+$)@i';
+    const PCRE_SELECTOR_PATTERN = '@^(?<selectorType>\^=|\$=|\*=|~=|!=)?(?<eventName>[a-z0-9.:_-]+$)@i';
 
     /**
      * textual representation of valid selector components
@@ -197,7 +197,28 @@ class Reacton {
      * @return  void
      */
     public function isValidSelector($selector) {
-        return (boolean) preg_match(self::PCRE_SELECTOR_PATTERN, $selector);
+        return (boolean) $this->getPatternMatch($selector);
+    }
+
+    /**
+     * Is given event name valid?
+     * @param   string
+     * @return  boolean
+     */
+    public function isValidEventName($eventName) {
+        $matches = $this->getPatternMatch($eventName);
+        return count($matches)
+            && empty($matches['selectorType']);
+    }
+
+    /**
+     * retrieve selector pattern matches array
+     * @param   string
+     * @return  array
+     */
+    public function getPatternMatch($selector) {
+        preg_match(self::PCRE_SELECTOR_PATTERN, $selector, $matches);
+        return $matches;
     }
 
     /**
