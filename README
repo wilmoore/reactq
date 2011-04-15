@@ -1,4 +1,0 @@
-This is a php event publish/subscribe tool
-
-Updating vendor libraries
-git submodule update --init --recursive
