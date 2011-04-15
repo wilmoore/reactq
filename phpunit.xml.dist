@@ -21,8 +21,7 @@
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix="Test.php">./src/test/unit/</directory>
             <exclude>
-                <directory>./src/test/unit/_tmp</directory>
-                <directory>./src/test/unit/_fixtures</directory>
+                <!--<directory>./src/test/unit/_fixtures</directory>-->
             </exclude>
         </whitelist>
     </filter>
