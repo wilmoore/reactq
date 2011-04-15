@@ -11,8 +11,8 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
+    'ReactQueueFixture' => __DIR__.'/src/test/unit/lib',
     'ReactQueue'        => __DIR__.'/src/lib',
-    'UnitTest\\Fixture' => __DIR__.'/src/test/unit',
     'Symfony'           => __DIR__.'/src/lib/vendor/symfony/src',
     'Zend'              => __DIR__.'/src/lib/vendor/zend/library',
 
