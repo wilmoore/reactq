@@ -1,6 +1,7 @@
 <?php
 /**
- * @package     reacton
+ * @package     ReactQueue
+ * @license     http://www.opensource.org/licenses/mit-license.html
  * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
  */
 
@@ -10,11 +11,11 @@ use Symfony\Component\ClassLoader\UniversalClassLoader;
 
 $loader = new UniversalClassLoader();
 $loader->registerNamespaces(array(
-    'React'            => __DIR__.'/src/lib',
-    'reacton_fixture'  => __DIR__.'/src/test/unit/lib',
-    'Symfony'          => __DIR__.'/src/lib/vendor/symfony/src',
-    'Doctrine\\Common' => __DIR__.'/src/lib/vendor/doctrine/common/lib',
-    'Zend'             => __DIR__.'/src/lib/vendor/zend/library',
+    'ReactQueue'                => __DIR__.'/src/lib',
+    'ReactQueue\\Test\\Fixture' => __DIR__.'/src/test/unit/fix',
+    'Symfony'                   => __DIR__.'/src/lib/vendor/symfony/src',
+    'Zend'                      => __DIR__.'/src/lib/vendor/zend/library',
+
 ));
 
 $loader->register();
