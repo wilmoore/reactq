@@ -1,9 +1,6 @@
-[submodule "src/lib/vendor/doctrine/common"]
-	path    = src/lib/vendor/doctrine/common
-	url     = git://github.com/doctrine/common.git
-[submodule "src/lib/vendor/symfony"]
-	path = src/lib/vendor/symfony
-	url = git://github.com/symfony/symfony.git
 [submodule "src/lib/vendor/zend"]
 	path = src/lib/vendor/zend
-	url = git://github.com/zendframework/zf2.git
+	url = git://github.com/wilmoore/zf2.git
+[submodule "src/lib/vendor/symfony/src/Symfony/Component/ClassLoader"]
+	path = src/lib/vendor/symfony/src/Symfony/Component/ClassLoader
+	url = git://github.com/symfony/ClassLoader.git

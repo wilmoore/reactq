@@ -1,17 +1,17 @@
 <?php
 /**
- * @package     reacton
+ * @package     ReactQueue
  * @license     http://www.opensource.org/licenses/mit-license.html
  * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
  */
 
-namespace m3\reacton\exception;
-      use m3\reacton\Exception,
-          RuntimeException;
+namespace ReactQueue\Exception;
+      use ReactQueue\Exception\Exception,
+          InvalidArgumentException;
 
 /**
- * @package     reacton
+ * @package     ReactQueue
  * @license     http://www.opensource.org/licenses/mit-license.html
  * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
  */
-class MethodNotFoundException extends RuntimeException implements Exception {}
+class InvalidEventNameException extends InvalidArgumentException implements Exception {}

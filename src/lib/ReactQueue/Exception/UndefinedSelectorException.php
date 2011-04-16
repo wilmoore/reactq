@@ -1,18 +1,16 @@
 <?php
 /**
  * @package     reacton
+ * @license     http://www.opensource.org/licenses/mit-license.html
  * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
  */
 
-namespace reacton_fixture\domain\entity;
+namespace reacton\exception;
+      use InvalidArgumentException;
 
 /**
- * user domain entity (used as context/target object when triggering events)
- *
  * @package     reacton
+ * @license     http://www.opensource.org/licenses/mit-license.html
  * @copyright   Full license/copyright information can be found in the LICENSE file distributed with this source code.
  */
-class User  {
-    public $name = 'jane';
-}
-
+class UndefinedSelectorException extends InvalidArgumentException implements Exception {}

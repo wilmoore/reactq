@@ -57,7 +57,7 @@ class ReactQueueTest extends TestCase {
             array('offer accepted'),    // string with spaces
             array('offer/accepted'),    // string with forward-slash
             array('offer\accepted'),    // string with back-slash
-            array('offer.Œccepted'), // unicode string
+            array('offer.Ã¥ccepted'), // unicode string
             array('@offer.accepted'),   // contains @
             array('offer!accepted'),    // contains !
             array('offer#accepted'),    // contains #
