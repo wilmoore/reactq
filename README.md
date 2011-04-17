@@ -121,9 +121,9 @@ and can be updated by executing the following command:
 Changelog
 ---------
 
--   **2011-04-17**: Released version 0.0.1 as a proof of concept. The goal is to start
-    testing against a few production applications but with a very limited scope. For
-    instance, request logging using only string-based event identifiers.
+-   **2011-04-17**: Released version 0.0.1-DEV as a proof of concept. The goal is to start testing against a few
+    production applications but with a very limited scope. For instance, request logging using only string-based
+    event identifiers.
 
 
 Contributors
