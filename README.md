@@ -7,7 +7,7 @@ ReactQ: A Reactive Event Queue for PHP
 **Contributors**:   See Contributors section below    
 **Copyright**:      2011-2011    
 **License**:        MIT License    
-**Latest Version**: 0.0.1
+**Latest Version**: 0.0.1-DEV
 **Release Date**:   April 20th 2011    
 
 Summary
