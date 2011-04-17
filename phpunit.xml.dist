@@ -2,14 +2,14 @@
 
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
+         bootstrap="./bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
-         processIsolation="false"
+         processIsolation="true"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="./bootstrap.php"
 >
     <testsuites>
         <testsuite name="Test Suite">
@@ -21,8 +21,7 @@
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix="Test.php">./src/test/unit/</directory>
             <exclude>
-                <directory>./src/test/unit/_tmp</directory>
-                <directory>./src/test/unit/_fixtures</directory>
+                <!--<directory>./src/test/unit/_fixtures</directory>-->
             </exclude>
         </whitelist>
     </filter>
