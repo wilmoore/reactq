@@ -28,20 +28,25 @@ class ReactQueueTest extends TestCase {
     /**
      * Retrieves valid selectors
      *
+     * Index 0 = selector (event name or pattern)
+     * Index 1 = whether string should be treated as a valid event selector pattern
+     * Index 2 = corresponding selector type (if string is a selector pattern)
+     * Index 3 = corresponding regular expression (if string is a selector pattern)
+     *
      * @return array
      */
     public function provider_valid_selectors() {
         return array(
-            array('offer.accepted'),        // basic string + dot
-            array('offer.first_acceptance'),// basic string + dot + underscore
-            array('offer.first-acceptance'),// basic string + dot + dash
-            array('offer:accepted'),        // basic string + colon
-            array('my.offer3:accepted'),    // basic string + dot + colon + numbers
-            array('^=offer'),               // starts-with
-            array('$=accepted'),            // ends-with
-            array('*=post'),                // contains string
-            array('~=post'),                // contains word
-            array('!=post'),                // basic string (negated, i.e. does not equal)
+            array('offer.accepted',         false,  null,   null),              // basic string + dot
+            array('offer.first_acceptance', false,  null,   null),              // basic string + dot + underscore
+            array('offer.first-acceptance', false,  null,   null),              // basic string + dot + dash
+            array('offer:accepted',         false,  null,   null),              // basic string + colon
+            array('my.offer3:accepted',     false,  null,   null),              // basic string + dot + colon + numbers
+            array('^=offer',                true,   '^=',   '/^offer/'),        // starts-with
+            array('$=accepted',             true,   '$=',   '/accepted$/'),     // ends-with
+            array('*=post',                 true,   '*=',   '/.*post.*/'),      // contains string
+            array('~=post',                 true,   '~=',   '/.*\bpost\b.*/'),  // contains word
+            array('!=post',                 true,   '!=',   '/^(?!post)$/'),    // basic string (negated, i.e. does not equal)
         );
     }
 
@@ -52,15 +57,15 @@ class ReactQueueTest extends TestCase {
      */
     public function provider_invalid_selectors() {
         return array(
-            array(null),                // null
-            array(''),                  // empty string
-            array('offer accepted'),    // string with spaces
-            array('offer/accepted'),    // string with forward-slash
-            array('offer\accepted'),    // string with back-slash
-            array('offer.åccepted'), // unicode string
-            array('@offer.accepted'),   // contains @
-            array('offer!accepted'),    // contains !
-            array('offer#accepted'),    // contains #
+            array(null),                    // null
+            array(''),                      // empty string
+            array('offer accepted'),        // string with spaces
+            array('offer/accepted'),        // string with forward-slash
+            array('offer\accepted'),        // string with back-slash
+            array('offer.åccepted'),        // unicode string
+            array('@offer.accepted'),       // contains @
+            array('offer!accepted'),        // contains !
+            array('offer#accepted'),        // contains #
         );
     }
 
@@ -137,6 +142,8 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Verify that handlers, when triggered, return a response collection object.
+     *
      * @test
      */
     public function Verify_Event_Handler_Returns_Any_Response() {
@@ -148,6 +155,8 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Verify that handlers, when triggered, return the expected response.
+     *
      * @test
      */
     public function Verify_Event_Handler_Returns_Correct_Response() {
@@ -159,6 +168,8 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Verify that event handlers, when triggered, modify by reference, the given context object.
+     *
      * @test
      */
     public function Verify_Event_Handler_Modifies_Given_Instance() {
@@ -173,6 +184,8 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Verify that when provided an obviously invalid callback, an exception is thrown.
+     *
      * @test
      * @expectedException   ReactQueue\Exception\InvalidCallbackException
      */
@@ -182,6 +195,8 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Ensure that invalid event names do not validate successfully.
+     *
      * @test
      * @param           $selector
      * @dataProvider    provider_invalid_selectors
@@ -194,8 +209,60 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
-     * Verifies that a single handler can be attached to multiple events in a single call by utilizing
-     * a selector pattern.
+     * Ensure that all valid selector patterns validate as being valid selector patterns.
+     *
+     * @test
+     * @dataProvider    provider_valid_selectors
+     *
+     * @param           $selector
+     * @param           $isSelectorPattern
+     *
+     * @return          void
+     */
+    public function Ensure_That_Valid_Selectors_Are_Seen_As_Valid_Selectors($selector, $isSelectorPattern) {
+        $this->assertEquals($isSelectorPattern, $this->reactQueue->isSelectorPattern($selector));
+    }
+
+    /**
+     * Ensure that the expected selector type is returned based on provided selector pattern.
+     *
+     * @test
+     * @dataProvider    provider_valid_selectors
+     *
+     * @param           $selector
+     * @param           $isSelectorPattern  (ignored)
+     * @param           $selectorType
+     *
+     * @return          void
+     */
+    public function Ensure_That_Expected_Selector_Type_Is_Retrieved($selector, $isSelectorPattern, $selectorType) {
+        $this->assertEquals($selectorType, $this->reactQueue->getSelectorType($selector));
+    }
+
+    /**
+     * Ensure that the expected regular expression is returned based on provided selector pattern.
+     *
+     * @test
+     * @dataProvider    provider_valid_selectors
+     *
+     * @param           $selector
+     * @param           $isSelectorPattern
+     * @param           $selectorType
+     * @param           $selectorRegex
+     *
+     * @return          void
+     */
+    public function Convert_Selector_Pattern_To_Regex_Then_Validate(
+        $selector, $isSelectorPattern, $selectorType, $selectorRegex) {
+        if (! $isSelectorPattern) {
+            $this->setExpectedException('ReactQueue\Exception\InvalidSelectorPatternException');
+        }
+
+        $this->assertEquals($selectorRegex, $this->reactQueue->getSelectorPatternRegex($selector));
+    }
+
+    /**
+     * Ensure that a selector pattern can cause a single handler to be called when a matching event is triggered.
      *
      * @return  void
      */
