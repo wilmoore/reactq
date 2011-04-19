@@ -12,8 +12,8 @@ namespace ReactQueue;
           ReactQueue\Exception\UndefinedSelectorException,
           Zend\EventManager\EventManager,
           Zend\EventManager\ResponseCollection,
-          Zend\Stdlib\Exception\InvalidCallbackException,
-          Zend\Stdlib\CallbackHandler;
+          Zend\Stdlib\CallbackHandler,
+          Zend\Stdlib\Exception\InvalidCallbackException;
 
 /**
  * Main entry-point
@@ -41,14 +41,21 @@ class ReactQueue {
     const VALID_SELECTOR_TEXT   = 'letters, numbers, colon (:), dot (.), and optionally, prefixed with a jquery-like attribute selector.';
 
     /**
-     * Invalid selector message (hopefully you don't see this one often)
+     * Invalid selector message
      *
      * @const
      */
     const INVALID_SELECTOR_MSG  = "The selector provided is invalid.\nA valid selector consists of %s.";
 
     /**
-     * Current selector (reset to null once callback is successfully bound).
+     * Invalid event name message
+     *
+     * @const
+     */
+    const INVALID_EVENT_NME_MSG = "'%s' is not a valid event name";
+
+    /**
+     * Current event selector
      *
      * @var null|string
      */
@@ -66,7 +73,7 @@ class ReactQueue {
      *
      * @var string
      */
-    protected $eventClass = 'Zend\EventManager\Event';
+    protected $eventClass       = 'Zend\EventManager\Event';
 
     /**
      * Constructor
@@ -76,43 +83,30 @@ class ReactQueue {
      * @return void
      */
     public function __construct() {
-        $this->eventManager = new EventManager();
+        $this->eventManager     = new EventManager();
     }
 
     /**
-     * Shortcut to the 'setSelector' method
+     * alias of 'on' method
      *
      * @param   string      $selector
      *
      * @return  ReactQueue  $this
      */
     public function __invoke($selector) {
-        return $this->setSelector($selector);
+        return $this->on($selector);
     }
 
     /**
-     * Shortcut to the 'setSelector' method.
+     * Sets the current event selector
      *
      * @param   string      $selector
      *
      * @return  ReactQueue  $this
      */
     public function on($selector) {
-        return $this->setSelector($selector);
-    }
-
-    /**
-     * Sets the current topic selector.
-     *
-     * @param   string      $selector
-     *
-     * @return  ReactQueue  $this
-     */
-    public function setSelector($selector) {
         if (! $this->isValidSelector($selector)) {
-            throw new InvalidSelectorException(
-                sprintf(self::INVALID_SELECTOR_MSG, self::VALID_SELECTOR_TEXT)
-            );
+            throw new InvalidSelectorException(sprintf(self::INVALID_SELECTOR_MSG, self::VALID_SELECTOR_TEXT));
         }
         $this->selector = $selector;
 
@@ -120,19 +114,17 @@ class ReactQueue {
     }
 
     /**
-     * Retrieves current selector
+     * Retrieves the current event selector
      *
      * @return  string
      */
     public function getSelector() { return $this->selector; }
 
     /**
-     * Designate a PHP callable to serve as the event handler which is executed
-     * when the corresponding event has been triggered.
+     * Designate a PHP callable to serve as the event handler which is executed when the corresponding event has been
+     * triggered.  A PHP Callable is anything that evaluates to true when passed to is_callable().
      *
-     * A PHP Callable is anything that evaluates to true if passed to is_callable
-     *
-     * The last argument indicates a priority at which the event should be executed. By default, this value is 1;
+     * The second argument indicates a priority at which the event should be executed. By default, this value is 1;
      * however, you may set it for any integer value. Higher values have higher priority (i.e., execute first).
      *
      * @param   callback    $callback
@@ -142,17 +134,13 @@ class ReactQueue {
      *                      If provided, the priority at which to register the callback
      *
      * @return  HandlerAggregate|CallbackHandler (in order to later 'detach')
-     *          describes the event handler combination .
+     *          describes the event handler combination.
      */
-    public function apply($callback, $priority = 1) {
+    public function call($callback, $priority = 1) {
         if (empty($this->selector)) { throw new UndefinedSelectorException('No event selector has been defined.'); }
 
-        // copy and reset selector property
-        $selector       = $this->selector;
-        $this->selector = null;
-
         // utilize copied selector as event and attach/apply callback with a priority
-        $handler = $this->eventManager->attach($selector, $callback, $priority);
+        $handler = $this->eventManager->attach($this->selector, $callback, $priority);
 
         try {
             /**
@@ -161,7 +149,7 @@ class ReactQueue {
              */
             $handler->getCallback();
         } catch(InvalidCallbackException $e) {
-            // detach then re-throw component-specific Exception
+            // detach then re-throw component-specific exception
             $this->eventManager->detach($handler);
             throw new Exception\InvalidCallbackException($e->getMessage());
         }
@@ -170,13 +158,13 @@ class ReactQueue {
     }
 
     /**
-     * Has the function been applied (based on given handler)
+     * Checks that the given Callback handler has been applied and is currently being tracked as an event subscriber.
      *
      * @param   CallbackHandler $handler
      *
      * @return  boolean
      */
-    public function isApplied(CallbackHandler $handler) {
+    public function hasHandler(CallbackHandler $handler) {
         $event    = $handler->getEvent();
         $handlers = $this->eventManager->getHandlers($event);
 
@@ -191,8 +179,8 @@ class ReactQueue {
      * are stored along-side normal string-based events; however, unlike the string-based events
      * they should not be triggered directly.
      *
-     * @param   string              $event
-     *                              name of the event to be triggered
+     * @param   string|string[]     $event
+     *                              name(s) of the event(s) to be triggered
      *
      * @param   string|object       $target
      *                              class or object instance corresponding to the operational "target"
@@ -207,13 +195,14 @@ class ReactQueue {
      */
     public function trigger($event, $target, $arguments = array()) {
         if (! $this->isValidEventName($event)) {
-            throw new InvalidEventNameException("'$event' is not a valid event name");
+            throw new InvalidEventNameException(sprintf(INVALID_EVENT_NME_MSG, $event));
         }
 
         // always use an array for iteration
         $events    = (array) $event;
         $responses = new ResponseCollection();
 
+        // trigger each event until propagation is stopped and re-package the responses
         foreach ($events as $event) {
             $responseCollection = $this->eventManager->triggerUntil($event, $target, $arguments, function(){
                 return false;
@@ -291,7 +280,7 @@ class ReactQueue {
     /**
      * Throws an exception instead of generating a fatal error on method calls that do not exist
      *
-     * because fatal errors suck and catching exceptions produces quite less suckage :)
+     * Because fatal errors suck and catching exceptions produces a bit less suckage :)
      *
      * @throws  Exception\MethodNotFoundException
      * @param   $name
@@ -300,9 +289,7 @@ class ReactQueue {
      * @return  void
      */
     public function __call($name, $arguments) {
-        throw new MethodNotFoundException(sprintf(
-            'method "%s" does not exist in class "%s"', $name, __CLASS__
-        ));
+        throw new MethodNotFoundException(sprintf( 'method "%s" does not exist in class "%s"', $name, __CLASS__));
     }
 
 }
