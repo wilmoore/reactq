@@ -194,7 +194,7 @@ class ReactQueue {
 
         // store selector pattern handlers locally
         if ($this->isSelectorPattern($this->selector)) {
-            $this->patternHandler[$this->selector] = clone $handler;
+            $this->patternHandler[$this->selector] = $handler;
             $this->eventManager->detach($handler);
         }
 
