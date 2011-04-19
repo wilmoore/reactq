@@ -119,8 +119,8 @@ and can be updated by executing the following command:
 
     git submodule update --init --recursive
 
-*   Zend\EventManager
-*   Symfony\Component\ClassLoader
+*   Zend\\EventManager
+*   Symfony\\Component\\ClassLoader
 
 
 Changelog
