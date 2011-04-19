@@ -211,6 +211,28 @@ class ReactQueue {
     }
 
     /**
+     * Retrieve all event handlers for a given event.
+     *
+     * First looks for basic string event name, then, if applicable, tries to pull in more handlers via pattern matches.
+     * 
+     * @param   string   $event 
+     *
+     * @return  PriorityQueue
+     */
+    public function getHandlers($eventName) {
+        // basic string events (still a PriorityQueue instance even if empty)
+        $handlerQueue = $this->eventManager->getHandlers($eventName);
+        $getRegexCb   = array($this, 'getSelectorPatternRegex');
+
+        // try to augment $handlerQueue with more handlers via pattern matches
+        array_map(function($patternHandler) use($getRegexCb, $handlerQueue) {
+            // pull selector pattern from handler which is stored as the event name
+            $selector = $patternHandler->getEvent();
+            $regex    = call_user_func($getRegexCb, $selector);
+        }, $this->getPatternHandlers());
+    }
+
+    /**
      * Checks that the given Callback handler has been applied and is currently being tracked as an event subscriber.
      *
      * @param   CallbackHandler $handler
@@ -268,6 +290,44 @@ class ReactQueue {
 
         return $responses;
     }
+
+    /**
+     * Trigger handlers until return value of one causes a callback to 
+     * evaluate to true
+     *
+     * Triggers handlers until the provided callback evaluates the return 
+     * value of one as true, or until all handlers have been executed.
+     * 
+     * @param  string $event 
+     * @param  string|object $context Object calling emit, or symbol describing context (such as static method name) 
+     * @param  array|ArrayAccess $argv Array of arguments; typically, should be associative
+     * @param  Callable $callback 
+     * @throws InvalidCallbackException if invalid callback provided
+     */
+    public function triggerUntil($event, $context, $argv, $callback) {
+        if (!is_callable($callback)) {
+            throw new InvalidCallbackException('Invalid callback provided');
+        }
+
+        $responses = new ResponseCollection;
+        $e         = new $this->eventClass($event, $context, $argv);
+        $handlers  = $this->getHandlers($event);
+
+        foreach ($handlers as $handler) {
+            $responses->push(call_user_func($handler->getCallback(), $e));
+            if ($e->propagationIsStopped()) {
+                $responses->setStopped(true);
+                break;
+            }
+            if (call_user_func($callback, $responses->last())) {
+                $responses->setStopped(true);
+                break;
+            }
+        }
+
+        return $responses;
+    }
+
 
     /**
      * Is the given selector valid?

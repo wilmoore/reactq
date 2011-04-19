@@ -1,14 +1,14 @@
-ReactQ: A minimalist DSL for PHP event queuing
-==============================================
+ReactQ: A minimalist DSL for PHP event delegation
+=================================================
 
-**Homepage**:       [http://reactq.com](http://reactq.com)
-**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)
-**Author**:         Wil Moore III
-**Contributors**:   See Contributors section below
-**Copyright**:      2011-2011
-**License**:        MIT License
-**Latest Version**: 0.0.2
-**Release Date**:   April 18th 2011
+**Homepage**:       [http://reactq.com](http://reactq.com)  
+**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)  
+**Author**:         Wil Moore III   
+**Contributors**:   See Contributors section below  
+**Copyright**:      2011-2011   
+**License**:        MIT License 
+**Latest Version**: 0.0.2   
+**Release Date**:   April 18th 2011 
 
 
 Summary
