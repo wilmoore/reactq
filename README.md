@@ -73,20 +73,22 @@ Autoloading
 
 **Via Zend_Loader_Autoloader**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
-* $autoloader = Zend_Loader_Autoloader::getInstance();
-* $autoloader->registerNamespace('ReactQueue');
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
+
+    $autoloader = Zend_Loader_Autoloader::getInstance();
+    $autoloader->registerNamespace('ReactQueue');
 
 
 **Via Zend_Loader_Autoloader (applicaiton.ini)**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
-* autoloadernamespaces.ReactQueue = "ReactQueue"
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
+
+    autoloadernamespaces.ReactQueue = "ReactQueue"
 
 
 **Via any other include_path-based autoloader**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
 
 
 Running Tests
