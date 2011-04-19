@@ -262,11 +262,51 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Ensure that initial pattern handler count is zero.
+     *
+     * @test
+     *
+     * @return          void
+     */
+    public function Ensure_Handler_Storage_Count_Is_Initially_Zero() {
+        $react           = new ReactQueue();
+        $patternHandlers = $react->getPatternHandlers();
+
+        $this->assertEquals(0, count($patternHandlers));
+    }
+
+    /**
+     * Ensure that when callback handlers are stored, they are stored to the correct location.
+     *
+     * Callback handlers associated with selector patterns should be stored locally
+     * Callback handlers with basic string names are stored in the event manager
+     *
+     * @test
+     * @dataProvider    provider_valid_selectors
+     *
+     * @param           $selector
+     * @param           $isSelectorPattern
+     * @param           $selectorType
+     * @param           $selectorRegex
+     *
+     * @return          void
+     */
+    public function Ensure_Handler_Storage($selector, $isSelectorPattern, $selectorType, $selectorRegex) {
+        $count           = (integer) $isSelectorPattern ?: 0;
+        $react           = new ReactQueue();
+        $eventHandler    = array(new OfferEventHandler(), 'log');
+        $handlerRefrence = $react->on($selector)->call($eventHandler);
+        $patternHandlers = $react->getPatternHandlers();
+
+        $this->assertEquals($count, count($patternHandlers));
+    }
+
+    /**
      * Ensure that a selector pattern can cause a single handler to be called when a matching event is triggered.
      *
      * @return  void
      */
-    public function Verify_Event_Selector_Pattern_Triggers_Multiple_Event() {
+    public function Verify_Event_Selector_Pattern_Triggers_Multiple_Events() {
         $on               = new ReactQueue();
         $eventHandler     = array(new OfferEventHandler(), 'log');
         $handlerReference = $on('^=offer')->call($eventHandler);

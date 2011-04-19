@@ -78,6 +78,13 @@ class ReactQueue {
     private $selector           = null;
 
     /**
+     * Stack of selector pattern event handlers
+     *
+     * @var array
+     */
+    private $patternHandler     = array();
+
+    /**
      * EventManager instance
      *
      * @var EventManager
@@ -89,7 +96,7 @@ class ReactQueue {
      *
      * @var string
      */
-    protected $eventClass       = 'Zend\EventManager\Event';
+    private $eventClass         = 'Zend\EventManager\Event';
 
     /**
      * Selector pattern regular expression templates
@@ -98,7 +105,7 @@ class ReactQueue {
      *
      * @var string
      */
-    protected $selectorRegex    = array(
+    protected $regexTemplate    = array(
         '^=' => '/^%s/',        // jquery-attribute-beginsWith
         '$=' => '/%s$/',        // jquery-attribute-endsWith
         '*=' => '/.*%s.*/',     // jquery-attribute-containsString
@@ -185,7 +192,22 @@ class ReactQueue {
             throw new Exception\InvalidCallbackException($e->getMessage());
         }
 
+        // store selector pattern handlers locally
+        if ($this->isSelectorPattern($this->selector)) {
+            $this->patternHandler[$this->selector] = clone $handler;
+            $this->eventManager->detach($handler);
+        }
+
         return $handler;
+    }
+
+    /**
+     * Retrieves the current list of selector pattern handlers.
+     *
+     * @return  boolean
+     */
+    public function getPatternHandlers() {
+        return $this->patternHandler;
     }
 
     /**
@@ -334,12 +356,12 @@ class ReactQueue {
         $name = $this->getSelectorEventName($selector);
         
         // selector regular expression template must be defined, otherwise, selector type is invalid.
-        if (empty($this->selectorRegex[$type])) {
+        if (empty($this->regexTemplate[$type])) {
             throw new InvalidSelectorTypeException(sprintf(self::INVALID_SELECTOR_TYPE_MSG, $type));
         }
 
         // retrieve the regular expression template
-        $regexTemplate = $this->selectorRegex[$type];
+        $regexTemplate = $this->regexTemplate[$type];
 
         // interpolate the template string and return the result
         return sprintf($regexTemplate, $name);
