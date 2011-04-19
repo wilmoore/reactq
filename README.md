@@ -7,8 +7,8 @@ ReactQ: A minimalist DSL for PHP event queuing
 **Contributors**:   See Contributors section below
 **Copyright**:      2011-2011
 **License**:        MIT License
-**Latest Version**: 0.0.1-DEV
-**Release Date**:   April 17th 2011
+**Latest Version**: 0.0.2
+**Release Date**:   April 18th 2011
 
 
 Summary
@@ -123,6 +123,9 @@ and can be updated by executing the following command:
 
 Changelog
 ---------
+
+-   **2011-04-18**: Released version 0.0.2 -- still a proof of concept. Refactored several methods for clarity
+    and did some docblock comment tidying.
 
 -   **2011-04-17**: Released version 0.0.1-DEV as a proof of concept. The goal is to start testing against a few
     production applications but with a very limited scope. For instance, request logging using only string-based
