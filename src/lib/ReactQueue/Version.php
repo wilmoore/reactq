@@ -19,6 +19,6 @@ class Version {
     /**
      * Current Version
      */
-    const VERSION = '0.0.1-DEV';
+    const VERSION = '0.0.2';
 
 }
