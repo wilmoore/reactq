@@ -221,15 +221,26 @@ class ReactQueue {
      */
     public function getHandlers($eventName) {
         // basic string events (still a PriorityQueue instance even if empty)
-        $handlerQueue = $this->eventManager->getHandlers($eventName);
-        $getRegexCb   = array($this, 'getSelectorPatternRegex');
+        $handlerQueue   = $this->eventManager->getHandlers($eventName);
+        $getRegexCb     = array($this, 'getSelectorPatternRegex');
+        $getEventNameCb = array($this, 'getSelectorEventName');
 
         // try to augment $handlerQueue with more handlers via pattern matches
         array_map(function($patternHandler) use($getRegexCb, $handlerQueue) {
             // pull selector pattern from handler which is stored as the event name
-            $selector = $patternHandler->getEvent();
-            $regex    = call_user_func($getRegexCb, $selector);
+            $selector   = $patternHandler->getEvent();
+            $eventName  = call_user_func($getEventNameCb, $selector);
+            $regex      = call_user_func($getRegexCb,     $selector);
+            $isMatch    = preg_match($regex, $eventName);
+
+            // insert handler if there is a match
+            if ($isMatch) {
+                $priority = $patternHandler->getOption('priority');
+                $handlerQueue->insert($patternHandler, $priority);
+            }
         }, $this->getPatternHandlers());
+
+        return $handlerQueue;
     }
 
     /**
