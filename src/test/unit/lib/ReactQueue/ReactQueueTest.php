@@ -89,13 +89,17 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Asserts that ReactQueue can be instantiated.
+     *
      * @test
      */
-    public function Can_Instantiate_Eventful_Object() {
+    public function Can_Instantiate_ReactQueue_Object() {
         $this->assertType(__NAMESPACE__.'\ReactQueue', new ReactQueue());
     }
 
     /**
+     * Asserts that provided valid selectors evaluate as valid.
+     *
      * @test
      * @param           $selector
      * @dataProvider    provider_valid_selectors
@@ -108,25 +112,28 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
+     * Asserts that provided invalid selectors evaluate as invalid.
+     *
      * @test
      * @param           $selector
      * @dataProvider    provider_invalid_selectors
      * @return          void
      */
     public function InValid_Selectors_Do_Not_Validate($selector) {
-        $this->assertFalse(
-            $this->reactQueue->isValidSelector($selector)
-        );
+        $answer = $this->reactQueue->isValidSelector($selector);
+        $this->assertFalse($answer);
     }
 
     /**
+     * Asserts that a handler reference can be used to check that a particular listener/callback has been set.
+     *
      * @test
      */
-    public function Verify_Applied_Function() {
-        $on     = new ReactQueue();
-        $handle = $on('offer.accept')->apply(function(){return;});
+    public function Verify_That_A_Handler_Can_Queried_For_After_Being_Set() {
+        $react  = new ReactQueue();
+        $handle = $react->on('offer.accept')->call(function(){return;});
 
-        $this->assertTrue($on->isApplied($handle));
+        $this->assertTrue($react->hasHandler($handle));
     }
 
     /**
@@ -134,7 +141,7 @@ class ReactQueueTest extends TestCase {
      */
     public function Verify_Event_Handler_Returns_Any_Response() {
         $on       = new ReactQueue();
-        $handle   = $on('offer.accept')->apply(array(new OfferEventHandler(), 'accept'));
+        $handle   = $on('offer.accept')->call(array(new OfferEventHandler(), 'accept'));
         $response = $on->trigger('offer.accept', new User(), array('dollars' => 24));
 
         $this->assertType('Zend\EventManager\ResponseCollection', $response);
@@ -145,7 +152,7 @@ class ReactQueueTest extends TestCase {
      */
     public function Verify_Event_Handler_Returns_Correct_Response() {
         $on       = new ReactQueue();
-        $handle   = $on('offer.accept')->apply(array(new OfferEventHandler(), 'accept'));
+        $handle   = $on('offer.accept')->call(array(new OfferEventHandler(), 'accept'));
         $response = $on->trigger('offer.accept', new User(), array('dollars' => 24));
 
         $this->assertEquals('jane, I have accepted your offer of $24', $response[0]);
@@ -159,7 +166,7 @@ class ReactQueueTest extends TestCase {
         $user->name = 'John';
 
         $on         = new ReactQueue();
-        $handle     = $on('offer.accept')->apply(array(new OfferEventHandler(), 'accept'));
+        $handle     = $on('offer.accept')->call(array(new OfferEventHandler(), 'accept'));
         $response   = $on->trigger('offer.accept', $user, array('dollars' => 24));
 
         $this->assertEquals('John, I have accepted your offer of $24', $response[0]);
@@ -171,7 +178,7 @@ class ReactQueueTest extends TestCase {
      */
     public function Applying_Bad_Callback_Throws_Exception() {
         $on     = new ReactQueue();
-        $handle = $on('e')->apply('obviously-not-a-valid-callback');
+        $handle = $on('e')->call('obviously-not-a-valid-callback');
     }
 
     /**
@@ -195,7 +202,7 @@ class ReactQueueTest extends TestCase {
     public function Verify_Event_Selector_Pattern_Triggers_Multiple_Event() {
         $on               = new ReactQueue();
         $eventHandler     = array(new OfferEventHandler(), 'log');
-        $handlerReference = $on('^=offer')->apply($eventHandler);
+        $handlerReference = $on('^=offer')->call($eventHandler);
 
         $acceptResponse   = $on->trigger('offer.accept',  new User(), array('dollars' => 24));
         $declineResponse  = $on->trigger('offer.decline', new User(), array('dollars' => 24));

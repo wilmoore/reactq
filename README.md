@@ -1,14 +1,14 @@
-ReactQ: A Reactive Event Queue for PHP
-======================================
+ReactQ: A minimalist DSL for PHP event queuing
+==============================================
 
-**Homepage**:       [http://reactq.com](http://reactq.com)   
-**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)   
+**Homepage**:       [http://reactq.com](http://reactq.com)
+**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)
 **Author**:         Wil Moore III
-**Contributors**:   See Contributors section below    
-**Copyright**:      2011-2011    
-**License**:        MIT License    
+**Contributors**:   See Contributors section below
+**Copyright**:      2011-2011
+**License**:        MIT License
 **Latest Version**: 0.0.1-DEV
-**Release Date**:   April 17th 2011    
+**Release Date**:   April 17th 2011
 
 
 Summary
@@ -33,16 +33,19 @@ events that match a pattern. These patterns are similar to jQuery attribute sele
 Features
 --------
 
-**1. Provides an elegant plug-in API with minimal ceremony**: ReactQ was built with ease-of-integration in mind;
-however, it is also meant to provide extreme flexibility. It can be used for trivial tasks such as logging and
-caching.  It can also be used for non-trivial tasks such as application filtering for access-rights checking,
-data filtering, or data validation.
-                                                                             
-**2. ReactQueue is quite opinionated**: ReactQueue does not deal with static events. This mitigates the
-potential issues surrounding hidden dependencies.
+**1. Opinionated**: ReactQueue does not deal with static events. This mitigates the potential hidden dependency issues.
 
-**3. Honors Priority**: ReactQueue allows callbacks to be added with a specific priority so functions can be
-called in a preferred order.
+**2. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
+provide extreme flexibility. ReactQueue can be used for trivial tasks like logging and caching. It can also be used for
+non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
+task, the syntax is the same simple-chainable internal DSL.
+                                                                             
+**3. Honors priority**: ReactQueue, in addition to allowing callbacks to serve as event handlers, it allows a priority
+to be associated with the event handler for cases when you need that level of granularity.
+
+**4. Built on the shoulders of giants**: ReactQueue currently wraps the well-tested and mature Zend\EventManager
+component (built for Zend Framework 2). We may eventually add drivers for other event managers/dispatchers such as the
+very mature "Symfony Event Dispatcher".
 
 
 Installing
