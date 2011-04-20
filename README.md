@@ -42,10 +42,10 @@ provide extreme flexibility. ReactQ can be used for trivial tasks like logging a
 non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
 task, the syntax is the same simple-chainable internal DSL.
                                                                              
-**2. Honors priority**: ReactQueue, in addition to allowing callbacks to serve as event handlers, it allows a priority
+**2. Honors priority**: ReactQ, in addition to allowing callbacks to serve as event handlers, it allows a priority
 to be associated with the event handler for cases when you need that level of granularity.
 
-**3. Built on the shoulders of giants**: ReactQueue currently wraps the well-tested and mature Zend\EventManager
+**3. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
 component (built for Zend Framework 2).
 
 **4. Testable**: ReactQ is fully unit-tested using PHPUnit.
