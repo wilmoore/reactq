@@ -1,5 +1,5 @@
-ReactQ: A minimalist DSL for PHP event handling
-===============================================
+ReactQ: A minimalist DSL for pub/sub in PHP
+===========================================
 
 **Homepage**:       [http://reactq.com](http://reactq.com)  
 **Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)  
