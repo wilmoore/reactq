@@ -37,20 +37,23 @@ http://en.wikipedia.org/wiki/Event-driven_programming
 Features
 --------
 
-**1. Opinionated**: ReactQ does not deal with static events. This mitigates the potential hidden dependency issues.
-
-**2. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
+**1. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
 provide extreme flexibility. ReactQ can be used for trivial tasks like logging and caching. It can also be used for
 non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
 task, the syntax is the same simple-chainable internal DSL.
                                                                              
-**3. Honors priority**: ReactQueue, in addition to allowing callbacks to serve as event handlers, it allows a priority
+**2. Honors priority**: ReactQueue, in addition to allowing callbacks to serve as event handlers, it allows a priority
 to be associated with the event handler for cases when you need that level of granularity.
 
-**4. Built on the shoulders of giants**: ReactQueue currently wraps the well-tested and mature Zend\EventManager
+**3. Built on the shoulders of giants**: ReactQueue currently wraps the well-tested and mature Zend\EventManager
 component (built for Zend Framework 2).
 
-**5. Testable**: ReactQ is fully unit-tested using PHPUnit.
+**4. Testable**: ReactQ is fully unit-tested using PHPUnit.
+
+**5. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
+should help to mitigates potential hidden dependency issues. You can of course choose to use your own global registry
+and pass ReactQ around that way if you feel the need; however, dependency injection is the cleaner, more maintainable,
+and easier to debug methodology, but YMMV.
 
 
 Requirements
