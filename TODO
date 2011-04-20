@@ -1,0 +1,12 @@
+ReactQueue
+----------
+
+*   sub-class Zend\EventManager\Event so helper methods can be added going forward.
+
+Zend\EventManager
+-----------------
+
+*   add a 'hasHandler' or 'containsHandler' method so we can shorten unit test 'Verify_That_A_Handler_Can_Queried_For_After_Being_Set' and
+    clean-up isApplied.
+
+*   Clean-up EventManager::triggerStaticHandlers.

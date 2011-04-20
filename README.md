@@ -1,14 +1,14 @@
-ReactQ: A minimalist DSL for PHP event queuing
-==============================================
+ReactQ: A minimalist DSL for PHP event delegation
+=================================================
 
-**Homepage**:       [http://reactq.com](http://reactq.com)
-**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)
-**Author**:         Wil Moore III
-**Contributors**:   See Contributors section below
-**Copyright**:      2011-2011
-**License**:        MIT License
-**Latest Version**: 0.0.2
-**Release Date**:   April 18th 2011
+**Homepage**:       [http://reactq.com](http://reactq.com)  
+**Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)  
+**Author**:         Wil Moore III   
+**Contributors**:   See Contributors section below  
+**Copyright**:      2011-2011   
+**License**:        MIT License 
+**Latest Version**: 0.1.0-beta  
+**Release Date**:   April 18th 2011 
 
 
 Summary
@@ -73,20 +73,22 @@ Autoloading
 
 **Via Zend_Loader_Autoloader**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
-* $autoloader = Zend_Loader_Autoloader::getInstance();
-* $autoloader->registerNamespace('ReactQueue');
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
+
+    $autoloader = Zend_Loader_Autoloader::getInstance();
+    $autoloader->registerNamespace('ReactQueue');
 
 
 **Via Zend_Loader_Autoloader (applicaiton.ini)**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
-* autoloadernamespaces.ReactQueue = "ReactQueue"
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
+
+    autoloadernamespaces.ReactQueue = "ReactQueue"
 
 
 **Via any other include_path-based autoloader**:
 
-* Ensure that the ReactQueue and Zend directories are under the include_path.
+*Ensure that the ReactQueue and Zend directories are under the include_path.*
 
 
 Running Tests
@@ -117,12 +119,19 @@ and can be updated by executing the following command:
 
     git submodule update --init --recursive
 
-# Zend\EventManager
-# Symfony\Component\ClassLoader
+*   Zend\\EventManager
+*   Symfony\\Component\\ClassLoader
 
 
 Changelog
 ---------
+
+-   **2011-04-20**: Released version 0.1.0-beta. This release provides the ability to define event selector
+    patterns similar to jQuery attribute selectors. For instance, you could define a listener for the event
+    'article.published'; however, if you for instance, wanted a log listener to be attached to each event
+    that started with the text 'article', you'd create an event selector like:
+
+    $react->on('^=article')->call(function(){ // logging code here... });
 
 -   **2011-04-18**: Released version 0.0.2 -- still a proof of concept. Refactored several methods for clarity
     and did some docblock comment tidying.
