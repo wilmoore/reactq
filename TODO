@@ -1,0 +1,23 @@
+ReactQueue
+----------
+
+*   sub-class Zend\EventManager\Event so helper methods can be added going forward.
+
+On 'triggerUntil' method:
+(DONE) 1 - get all events (based on triggered event name).
+
+(DONE) 2 - clone events to a new local priority queue (we will add to this later).
+
+3 - iterate over $this->regexEventSelectors, for each that matches, $localPriorityQueue->insert($h->event, $h->callback, $handler->priority);
+    NOTE: can use array_filter for this...
+
+4 - this is now our new events array (priority queue), run these into triggerUntil...
+
+
+Zend\EventManager
+-----------------
+
+*   add a 'hasHandler' or 'containsHandler' method so we can shorten unit test 'Verify_That_A_Handler_Can_Queried_For_After_Being_Set' and
+    clean-up isApplied.
+
+*   Clean-up EventManager::triggerStaticHandlers.

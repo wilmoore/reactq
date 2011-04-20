@@ -7,6 +7,8 @@
 
 namespace ReactQueue;
       use ReactQueue\Exception\InvalidSelectorException,
+          ReactQueue\Exception\InvalidSelectorPatternException,
+          ReactQueue\Exception\InvalidSelectorTypeException,
           ReactQueue\Exception\InvalidEventNameException,
           ReactQueue\Exception\MethodNotFoundException,
           ReactQueue\Exception\UndefinedSelectorException,
@@ -31,28 +33,42 @@ class ReactQueue {
      *
      * @const
      */
-    const PCRE_SELECTOR_PATTERN = '@^(?<selectorType>\^=|\$=|\*=|~=|!=)?(?<eventName>[a-z0-9.:_-]+$)@i';
+    const PCRE_SELECTOR_PATTERN     = '@^(?<selectorType>\^=|\$=|\*=|~=|!=)?(?<eventName>[a-z0-9.:_-]+$)@i';
 
     /**
      * Textual representation of valid selector components
      *
      * @const
      */
-    const VALID_SELECTOR_TEXT   = 'letters, numbers, colon (:), dot (.), and optionally, prefixed with a jquery-like attribute selector.';
+    const VALID_SELECTOR_TEXT       = 'letters, numbers, colon (:), dot (.), and optionally, prefixed with a jquery-like attribute selector.';
 
     /**
      * Invalid selector message
      *
      * @const
      */
-    const INVALID_SELECTOR_MSG  = "The selector provided is invalid.\nA valid selector consists of %s.";
+    const INVALID_SELECTOR_MSG      = "The selector provided is invalid.\nA valid selector consists of %s.";
 
     /**
      * Invalid event name message
      *
      * @const
      */
-    const INVALID_EVENT_NME_MSG = "'%s' is not a valid event name";
+    const INVALID_EVENT_NAME_MSG    = "'%s' is not a valid event name.";
+
+    /**
+     * Invalid selector type message
+     *
+     * @const
+     */
+    const INVALID_SELECTOR_TYPE_MSG = "'%s' is not a valid selector type.";
+
+    /**
+     * Invalid selector pattern message
+     *
+     * @const
+     */
+    const INVALID_SELECTOR_PTRN_MSG = "'%s' is not a valid selector pattern.";
 
     /**
      * Current event selector
@@ -60,6 +76,13 @@ class ReactQueue {
      * @var null|string
      */
     private $selector           = null;
+
+    /**
+     * Stack of selector pattern event handlers
+     *
+     * @var array
+     */
+    private $patternHandler     = array();
 
     /**
      * EventManager instance
@@ -73,7 +96,22 @@ class ReactQueue {
      *
      * @var string
      */
-    protected $eventClass       = 'Zend\EventManager\Event';
+    private $eventClass         = 'Zend\EventManager\Event';
+
+    /**
+     * Selector pattern regular expression templates
+     *
+     * Formatted for use with sprintf.
+     *
+     * @var string
+     */
+    protected $regexTemplate    = array(
+        '^=' => '/^%s/',            // jquery-attribute-beginsWith
+        '$=' => '/%s$/',            // jquery-attribute-endsWith
+        '*=' => '/.*%s.*/',         // jquery-attribute-containsString
+        '~=' => '/.*\b%s\b.*/',     // jquery-attribute-containsWord
+        '!=' => '/^.*(?!%s).*$/',   // jquery-attribute-doesNotEqual
+    );
 
     /**
      * Constructor
@@ -154,7 +192,46 @@ class ReactQueue {
             throw new Exception\InvalidCallbackException($e->getMessage());
         }
 
+        // store selector pattern handlers locally
+        if ($this->isSelectorPattern($this->selector)) {
+            $this->patternHandler[$this->selector] = $handler;
+            $this->eventManager->detach($handler);
+        }
+
         return $handler;
+    }
+
+    /**
+     * Retrieves the current list of selector pattern handlers.
+     *
+     * @return  boolean
+     */
+    public function getPatternHandlers() {
+        return $this->patternHandler;
+    }
+
+    /**
+     * Retrieve all event handlers for a given event.
+     *
+     * First looks for basic string event name, then, if applicable, tries to pull in more handlers via pattern matches.
+     * 
+     * @param   string   $event 
+     *
+     * @return  PriorityQueue
+     */
+    public function getHandlers($eventName) {
+        // basic string events (still a PriorityQueue instance even if empty)
+        $handlerQueue    = $this->eventManager->getHandlers($eventName);
+        $patternHandlers = $this->getPatternHandlers();
+
+        foreach ($patternHandlers as $selector => $handler) {
+            if (preg_match($this->getSelectorPatternRegex($selector), $eventName)) {
+                $handlerQueue->insert($handler, $handler->getOption('priority'));
+            }
+        }
+        unset($selector, $handler);
+
+        return $handlerQueue;
     }
 
     /**
@@ -175,14 +252,10 @@ class ReactQueue {
     /**
      * Trigger all handlers for a given event.
      *
-     * Also ensures that a selector pattern can't be used to trigger an event directly as patterns
-     * are stored along-side normal string-based events; however, unlike the string-based events
-     * they should not be triggered directly.
-     *
      * @param   string|string[]     $event
      *                              name(s) of the event(s) to be triggered
      *
-     * @param   string|object       $target
+     * @param   string|object       $context
      *                              class or object instance corresponding to the operational "target"
      *                              Example: if we triggered an event called "article.post", our target would likely
      *                                       be an object instance of say $article. Target could also be a service that
@@ -193,28 +266,57 @@ class ReactQueue {
      *
      * @return  ResponseCollection  All handler return values
      */
-    public function trigger($event, $target, $arguments = array()) {
-        if (! $this->isValidEventName($event)) {
-            throw new InvalidEventNameException(sprintf(INVALID_EVENT_NME_MSG, $event));
-        }
+    public function trigger($event, $context, $argv = array()) {
+        return $this->triggerUntil($event, $context, $argv, function(){
+            return false;
+        });
+    }
 
-        // always use an array for iteration
-        $events    = (array) $event;
-        $responses = new ResponseCollection();
+    /**
+     * Trigger handlers until return value of one causes a callback to 
+     * evaluate to true
+     *
+     * Triggers handlers until the provided callback evaluates the return 
+     * value of one as true, or until all handlers have been executed.
+     * 
+     * @param   string              $event 
+     *
+     * @param   string|object       $context
+     *                              Object calling emit, or symbol describing context (such as static method name)
+     *
+     * @param   array|ArrayAccess   $argv
+     *                              Array of arguments; typically, should be associative
+     *
+     * @param   Callable            $callback 
+     *
+     * @return  ResponseCollection
+     *
+     * @throws  InvalidCallbackException    if invalid callback provided
+     */
+    public function triggerUntil($event, $context, $argv, $callback) {
+        if (!is_callable($callback)) { throw new InvalidCallbackException('Invalid callback provided'); }
 
-        // trigger each event until propagation is stopped and re-package the responses
-        foreach ($events as $event) {
-            $responseCollection = $this->eventManager->triggerUntil($event, $target, $arguments, function(){
-                return false;
-            });
+        $responses = new ResponseCollection;
+        $e         = new $this->eventClass($event, $context, $argv);
+        $handlers  = $this->getHandlers($event);
 
-            foreach ($responseCollection as $response) {
-                $responses->push($response);
+        foreach ($handlers as $handler) {
+            $responses->push(call_user_func($handler->getCallback(), $e));
+
+            if ($e->propagationIsStopped()) {
+                $responses->setStopped(true);
+                break;
+            }
+
+            if (call_user_func($callback, $responses->last())) {
+                $responses->setStopped(true);
+                break;
             }
         }
 
         return $responses;
     }
+
 
     /**
      * Is the given selector valid?
@@ -241,6 +343,77 @@ class ReactQueue {
     public function isValidSelector($selector) {
         // cast returned array to boolean (empty array == false)
         return (boolean) $this->getPatternMatch($selector);
+    }
+
+    /**
+     * Is given selector a selector pattern?
+     *
+     * @param   string
+     *
+     * @return  boolean
+     */
+    public function isSelectorPattern($selector) {
+        return (boolean) $this->getSelectorType($selector);
+    }
+
+    /**
+     * Retrieves the selector type for a given selector.
+     *
+     * @param   string
+     *
+     * @return  string|null
+     */
+    public function getSelectorType($selector) {
+        // retrieves the pattern matches array
+        $matches = $this->getPatternMatch($selector);
+
+        return isset($matches['selectorType'])
+             ? $matches['selectorType']
+             : null;
+    }
+
+    /**
+     * Retrieves the event name for a given selector.
+     *
+     * @param   string
+     *
+     * @return  string|null
+     */
+    public function getSelectorEventName($selector) {
+        // retrieves the pattern matches array
+        $matches = $this->getPatternMatch($selector);
+
+        return isset($matches['eventName'])
+             ? $matches['eventName']
+             : null;
+    }
+
+    /**
+     * Retrieve the selector pattern regex.
+     *
+     * @param   string
+     *
+     * @return  string|null
+     */
+    public function getSelectorPatternRegex($selector) {
+        // we should only work with a $selector that is a valid "selector pattern"
+        if (! $this->isSelectorPattern($selector)) {
+            throw new InvalidSelectorPatternException(sprintf(self::INVALID_SELECTOR_PTRN_MSG, $selector));
+        }
+
+        $type = $this->getSelectorType($selector);
+        $name = $this->getSelectorEventName($selector);
+        
+        // selector regular expression template must be defined, otherwise, selector type is invalid.
+        if (empty($this->regexTemplate[$type])) {
+            throw new InvalidSelectorTypeException(sprintf(self::INVALID_SELECTOR_TYPE_MSG, $type));
+        }
+
+        // retrieve the regular expression template
+        $regexTemplate = $this->regexTemplate[$type];
+
+        // interpolate the template string and return the result
+        return sprintf($regexTemplate, $name);
     }
 
     /**
