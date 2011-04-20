@@ -62,21 +62,21 @@ Requirements
 Installing
 ----------
 
-To install ReactQ via PEAR:
+**PEAR:**
 
     Not Yet Supported
 
-Git Submodule (use this if your project's source is tracked in a Git submodule):
+**Git Submodule (use this if your project's source is tracked in a Git submodule):**
 
     $ git submodule add https://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
 
-**relace "src/lib/vendor/" with your own path preference**
+*replace "src/lib/vendor/" with your own path preference*
  
-Get the entire source repository:
+**Get the entire source repository:**
 
     $ git clone git://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
 
-**relace "src/lib/vendor/" with your own path preference**
+*replace "src/lib/vendor/" with your own path preference*
     
 You will need to add ReactQ and Zend to your application’s autoloader. ReactQ by default, includes the Symfony2 universal class loader. If your application does not already use an autoloader, you may use the Symfony2 autoloader distributed with ReactQ. See "autoloader.php.dist".
 
@@ -173,6 +173,6 @@ Special thanks to the following people for submitting patches:
 Copyright
 ---------
 
-ReactQ &copy; 2011-2011 by [Wil Moore III](mailto:wil.moore@wilmoore.com).
-ReactQ is licensed under the MIT license.  Please see the LICENSE file for more information.
+ReactQ &copy; 2011-2011 by [Wil Moore III](mailto:wil.moore@wilmoore.com).  
+ReactQ is licensed under the MIT license.  Please see the LICENSE file for more information.    
 
