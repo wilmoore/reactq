@@ -7,7 +7,7 @@ ReactQ: A minimalist DSL for PHP event delegation
 **Contributors**:   See Contributors section below  
 **Copyright**:      2011-2011   
 **License**:        MIT License 
-**Latest Version**: 0.0.2   
+**Latest Version**: 0.1.0-beta  
 **Release Date**:   April 18th 2011 
 
 
@@ -125,6 +125,13 @@ and can be updated by executing the following command:
 
 Changelog
 ---------
+
+-   **2011-04-20**: Released version 0.1.0-beta. This release provides the ability to define event selector
+    patterns similar to jQuery attribute selectors. For instance, you could define a listener for the event
+    'article.published'; however, if you for instance, wanted a log listener to be attached to each event
+    that started with the text 'article', you'd create an event selector like:
+
+    $react->on('^=article')->call(function(){ // logging code here... });
 
 -   **2011-04-18**: Released version 0.0.2 -- still a proof of concept. Refactored several methods for clarity
     and did some docblock comment tidying.
