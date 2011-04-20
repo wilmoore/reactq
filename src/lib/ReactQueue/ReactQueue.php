@@ -106,11 +106,11 @@ class ReactQueue {
      * @var string
      */
     protected $regexTemplate    = array(
-        '^=' => '/^%s/',        // jquery-attribute-beginsWith
-        '$=' => '/%s$/',        // jquery-attribute-endsWith
-        '*=' => '/.*%s.*/',     // jquery-attribute-containsString
-        '~=' => '/.*\b%s\b.*/', // jquery-attribute-containsWord
-        '!=' => '/^(?!%s)$/',   // jquery-attribute-doesNotEqual
+        '^=' => '/^%s/',            // jquery-attribute-beginsWith
+        '$=' => '/%s$/',            // jquery-attribute-endsWith
+        '*=' => '/.*%s.*/',         // jquery-attribute-containsString
+        '~=' => '/.*\b%s\b.*/',     // jquery-attribute-containsWord
+        '!=' => '/^.*(?!%s).*$/',   // jquery-attribute-doesNotEqual
     );
 
     /**
@@ -221,24 +221,15 @@ class ReactQueue {
      */
     public function getHandlers($eventName) {
         // basic string events (still a PriorityQueue instance even if empty)
-        $handlerQueue   = $this->eventManager->getHandlers($eventName);
-        $getRegexCb     = array($this, 'getSelectorPatternRegex');
-        $getEventNameCb = array($this, 'getSelectorEventName');
+        $handlerQueue    = $this->eventManager->getHandlers($eventName);
+        $patternHandlers = $this->getPatternHandlers();
 
-        // try to augment $handlerQueue with more handlers via pattern matches
-        array_map(function($patternHandler) use($getRegexCb, $handlerQueue) {
-            // pull selector pattern from handler which is stored as the event name
-            $selector   = $patternHandler->getEvent();
-            $eventName  = call_user_func($getEventNameCb, $selector);
-            $regex      = call_user_func($getRegexCb,     $selector);
-            $isMatch    = preg_match($regex, $eventName);
-
-            // insert handler if there is a match
-            if ($isMatch) {
-                $priority = $patternHandler->getOption('priority');
-                $handlerQueue->insert($patternHandler, $priority);
+        foreach ($patternHandlers as $selector => $handler) {
+            if (preg_match($this->getSelectorPatternRegex($selector), $eventName)) {
+                $handlerQueue->insert($handler, $handler->getOption('priority'));
             }
-        }, $this->getPatternHandlers());
+        }
+        unset($selector, $handler);
 
         return $handlerQueue;
     }
@@ -261,14 +252,10 @@ class ReactQueue {
     /**
      * Trigger all handlers for a given event.
      *
-     * Also ensures that a selector pattern can't be used to trigger an event directly as patterns
-     * are stored along-side normal string-based events; however, unlike the string-based events
-     * they should not be triggered directly.
-     *
      * @param   string|string[]     $event
      *                              name(s) of the event(s) to be triggered
      *
-     * @param   string|object       $target
+     * @param   string|object       $context
      *                              class or object instance corresponding to the operational "target"
      *                              Example: if we triggered an event called "article.post", our target would likely
      *                                       be an object instance of say $article. Target could also be a service that
@@ -279,27 +266,10 @@ class ReactQueue {
      *
      * @return  ResponseCollection  All handler return values
      */
-    public function trigger($event, $target, $arguments = array()) {
-        if (! $this->isValidEventName($event)) {
-            throw new InvalidEventNameException(sprintf(INVALID_EVENT_NAME_MSG, $event));
-        }
-
-        // always use an array for iteration
-        $events    = (array) $event;
-        $responses = new ResponseCollection();
-
-        // trigger each event until propagation is stopped and re-package the responses
-        foreach ($events as $event) {
-            $responseCollection = $this->eventManager->triggerUntil($event, $target, $arguments, function(){
-                return false;
-            });
-
-            foreach ($responseCollection as $response) {
-                $responses->push($response);
-            }
-        }
-
-        return $responses;
+    public function trigger($event, $context, $argv = array()) {
+        return $this->triggerUntil($event, $context, $argv, function(){
+            return false;
+        });
     }
 
     /**
@@ -309,16 +279,22 @@ class ReactQueue {
      * Triggers handlers until the provided callback evaluates the return 
      * value of one as true, or until all handlers have been executed.
      * 
-     * @param  string $event 
-     * @param  string|object $context Object calling emit, or symbol describing context (such as static method name) 
-     * @param  array|ArrayAccess $argv Array of arguments; typically, should be associative
-     * @param  Callable $callback 
-     * @throws InvalidCallbackException if invalid callback provided
+     * @param   string              $event 
+     *
+     * @param   string|object       $context
+     *                              Object calling emit, or symbol describing context (such as static method name)
+     *
+     * @param   array|ArrayAccess   $argv
+     *                              Array of arguments; typically, should be associative
+     *
+     * @param   Callable            $callback 
+     *
+     * @return  ResponseCollection
+     *
+     * @throws  InvalidCallbackException    if invalid callback provided
      */
     public function triggerUntil($event, $context, $argv, $callback) {
-        if (!is_callable($callback)) {
-            throw new InvalidCallbackException('Invalid callback provided');
-        }
+        if (!is_callable($callback)) { throw new InvalidCallbackException('Invalid callback provided'); }
 
         $responses = new ResponseCollection;
         $e         = new $this->eventClass($event, $context, $argv);
@@ -326,10 +302,12 @@ class ReactQueue {
 
         foreach ($handlers as $handler) {
             $responses->push(call_user_func($handler->getCallback(), $e));
+
             if ($e->propagationIsStopped()) {
                 $responses->setStopped(true);
                 break;
             }
+
             if (call_user_func($callback, $responses->last())) {
                 $responses->setStopped(true);
                 break;

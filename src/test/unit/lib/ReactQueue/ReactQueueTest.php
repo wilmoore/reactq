@@ -37,16 +37,16 @@ class ReactQueueTest extends TestCase {
      */
     public function provider_valid_selectors() {
         return array(
-            array('offer.accepted',         false,  null,   null),              // basic string + dot
-            array('offer.first_acceptance', false,  null,   null),              // basic string + dot + underscore
-            array('offer.first-acceptance', false,  null,   null),              // basic string + dot + dash
-            array('offer:accepted',         false,  null,   null),              // basic string + colon
-            array('my.offer3:accepted',     false,  null,   null),              // basic string + dot + colon + numbers
-            array('^=offer',                true,   '^=',   '/^offer/'),        // starts-with
-            array('$=accepted',             true,   '$=',   '/accepted$/'),     // ends-with
-            array('*=post',                 true,   '*=',   '/.*post.*/'),      // contains string
-            array('~=post',                 true,   '~=',   '/.*\bpost\b.*/'),  // contains word
-            array('!=post',                 true,   '!=',   '/^(?!post)$/'),    // basic string (negated, i.e. does not equal)
+            array('offer.accepted',         false,  null,   null),                  // basic string + dot
+            array('offer.first_acceptance', false,  null,   null),                  // basic string + dot + underscore
+            array('offer.first-acceptance', false,  null,   null),                  // basic string + dot + dash
+            array('offer:accepted',         false,  null,   null),                  // basic string + colon
+            array('my.offer3:accepted',     false,  null,   null),                  // basic string + dot + colon + numbers
+            array('^=offer',                true,   '^=',   '/^offer/'),            // starts-with
+            array('$=accepted',             true,   '$=',   '/accepted$/'),         // ends-with
+            array('*=post',                 true,   '*=',   '/.*post.*/'),          // contains string
+            array('~=post',                 true,   '~=',   '/.*\bpost\b.*/'),      // contains word
+            array('!=post',                 true,   '!=',   '/^.*(?!post).*$/'),    // basic string (negated, i.e. does not equal)
         );
     }
 
@@ -83,6 +83,25 @@ class ReactQueueTest extends TestCase {
             array('!=post'),                // basic string (negated, i.e. does not equal)
         );
     }
+
+    /**
+     * Retrieves selector mixes (basic string event name and selector patterns)
+     *
+     * Index 0 = selector(s)
+     * Index 1 = expected count
+     *
+     * @return array
+     */
+    public function provider_selectors_mixed() {
+        return array(
+            array(array('offer.accepted'),                                      1),
+            array(array('my.offer3:accepted',       '*=offer'),                 2),
+            array(array('before.article.published', '~=article'),               2),
+            array(array('offer.accepted',           '^=offer', '$=accepted'),   3),
+            array(array('before.article.published', '!=some.arbitrary.string'), 2),
+        );
+    }
+
 
     /**
      * Do the following before each test...
@@ -302,20 +321,52 @@ class ReactQueueTest extends TestCase {
     }
 
     /**
-     * Ensure that a selector pattern can cause a single handler to be called when a matching event is triggered.
+     * Verify that all expected event handlers are retrieved when an event is triggered that corresponds to an
+     * event selector pattern match.
+     * 
+     * The string event's handler should be retrieved, along with any pattern based handlers that match the given
+     * even string.
+     *
+     * @test
+     * @dataProvider    provider_selectors_mixed
+     *
+     * @param           $selectors
+     * @param           $count
+     *
+     * @return          void
+     */
+    public function Retrieves_String_And_Pattern_Handlers(array $selectors, $count) {
+        $react        = new ReactQueue();
+        $eventHandler = array(new OfferEventHandler(), 'log');
+        $eventName    = $selectors[0];
+
+        foreach ($selectors as $selector) {
+            $react->on($selector)->call($eventHandler);
+        }
+        
+        $handlers = $react->getHandlers($eventName);
+        $this->assertEquals($count, $handlers->count());
+    }
+
+    /**
+     * Ensure that given a selector pattern that matches a triggered event can cause multiple handlers to be executed.
+     *
+     * @test
      *
      * @return  void
      */
     public function Verify_Event_Selector_Pattern_Triggers_Multiple_Events() {
-        $on               = new ReactQueue();
-        $eventHandler     = array(new OfferEventHandler(), 'log');
-        $handlerReference = $on('^=offer')->call($eventHandler);
+        $on             = new ReactQueue();
+        $eventHandler   = array(new OfferEventHandler(), 'log');
 
-        $acceptResponse   = $on->trigger('offer.accept',  new User(), array('dollars' => 24));
-        $declineResponse  = $on->trigger('offer.decline', new User(), array('dollars' => 24));
+        // setup event listeners/handlers
+        $on('page.viewed')->call($eventHandler);
+        $on('^=page')->call($eventHandler);
+        $on('$=viewed')->call($eventHandler);
 
-        $this->assertType('Zend\EventManager\ResponseCollection', $acceptResponse);
-        $this->assertType('Zend\EventManager\ResponseCollection', $acceptResponse);
+        $eventResponses = $on->trigger('page.viewed', new User(), array('dollars' => 24));
+
+        $this->assertEquals(3, $eventResponses->count());
     }
 
 }
