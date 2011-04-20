@@ -69,15 +69,15 @@ Installing
 
 **Git Submodule (use this if your project's source is tracked in a Git submodule):**
 
-    $ git submodule add https://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
+    $ git submodule add https://github.com/wilmoore/reactq.git {path/to/your/vendor/directory}/reactq
 
-*replace "src/lib/vendor/" with your own path preference*
+*replace "{path/to/your/vendor/directory}" the path to your vendor library director*
  
 **Get the entire source repository:**
 
-    $ git clone git://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
+    $ git clone https://github.com/wilmoore/reactq.git {path/to/your/vendor/directory}/reactq
 
-*replace "src/lib/vendor/" with your own path preference*
+*replace "{path/to/your/vendor/directory}" the path to your vendor library director*
     
 You will need to add ReactQ and Zend to your application’s autoloader. ReactQ by default, includes the Symfony2 universal class loader. If your application does not already use an autoloader, you may use the Symfony2 autoloader distributed with ReactQ. See "autoloader.php.dist".
 
