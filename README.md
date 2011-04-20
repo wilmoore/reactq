@@ -1,5 +1,5 @@
-ReactQ: A minimalist DSL for PHP event delegation
-=================================================
+ReactQ: A minimalist DSL for PHP event handling
+===============================================
 
 **Homepage**:       [http://reactq.com](http://reactq.com)  
 **Git**:            [http://github.com/wmoore/reactq](http://github.com/wmoore/reactq)  
