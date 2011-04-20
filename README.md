@@ -29,14 +29,17 @@ A shortcut to subscribing a single listener to multiple events is to specify an 
 words, instead of subscribing to a single event represented as a string, you will subscribe to a set of (one or more)
 events that match a pattern. These patterns are similar to jQuery attribute selectors.
 
+From an extremely academic perspective, at work here is the observer (publish/subscribe) pattern, also known as signals
+and slots. See http://en.wikipedia.org/wiki/Signals_and_slots.
+
 
 Features
 --------
 
-**1. Opinionated**: ReactQueue does not deal with static events. This mitigates the potential hidden dependency issues.
+**1. Opinionated**: ReactQ does not deal with static events. This mitigates the potential hidden dependency issues.
 
 **2. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
-provide extreme flexibility. ReactQueue can be used for trivial tasks like logging and caching. It can also be used for
+provide extreme flexibility. ReactQ can be used for trivial tasks like logging and caching. It can also be used for
 non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
 task, the syntax is the same simple-chainable internal DSL.
                                                                              
@@ -44,8 +47,16 @@ task, the syntax is the same simple-chainable internal DSL.
 to be associated with the event handler for cases when you need that level of granularity.
 
 **4. Built on the shoulders of giants**: ReactQueue currently wraps the well-tested and mature Zend\EventManager
-component (built for Zend Framework 2). We may eventually add drivers for other event managers/dispatchers such as the
-very mature "Symfony Event Dispatcher".
+component (built for Zend Framework 2).
+
+**5. Testable**: ReactQ is fully unit-tested using PHPUnit.
+
+
+Requirements
+------------
+
+*   [required] PHP 5.3+
+*   [optional] PHPUnit 3.4.15 is required to execute the test suite (phpunit --version)
 
 
 Installing
@@ -55,15 +66,25 @@ To install ReactQ via PEAR:
 
     Not Yet Supported
 
-To install ReactQ via Github:
+Git Submodule (use this if your project's source is tracked in a Git submodule):
+
+    $ git submodule add https://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
+
+**relace "src/lib/vendor/" with your own path preference**
+ 
+Get the entire source repository:
 
     $ git clone git://github.com/wilmoore/reactq.git src/lib/vendor/reactq/src/lib/ReactQueue
+
+**relace "src/lib/vendor/" with your own path preference**
     
+You will need to add ReactQ and Zend to your application’s autoloader. ReactQ by default, includes the Symfony2 universal class loader. If your application does not already use an autoloader, you may use the Symfony2 autoloader distributed with ReactQ. See "autoloader.php.dist".
+
 
 Autoloading
 -----------
 
-**Via Symfony Classloader**:
+**Via Symfony2 universal class loader**:
 
     $loader->registerNamespaces(array(
         'ReactQueue' => __DIR__.'/src/lib/vendor/reactq/src/lib',
