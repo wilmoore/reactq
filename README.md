@@ -30,7 +30,7 @@ words, instead of subscribing to a single event represented as a string, you wil
 events that match a pattern. These patterns are similar to jQuery attribute selectors.
 
 From an extremely academic perspective, at work here is the observer (publish/subscribe) pattern, also known as signals
-and slots. See http://en.wikipedia.org/wiki/Signals_and_slots.
+and slots. See http://en.wikipedia.org/wiki/Signals_and_slots
 
 
 Features
