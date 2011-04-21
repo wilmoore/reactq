@@ -14,20 +14,28 @@ ReactQ: A minimalist DSL for pub/sub in PHP
 Summary
 -------
 
-ReactQ is an extremely terse little API for managing events and event subscriptions, and event handlers in-process.
+ReactQ is a minimalist API for managing events, event subscriptions, and event handlers in-process.
 
-This means that when integrated into your application, you can declare that an event has happened (trigger event) and if
-any listeners have been subscribed to that type of event, any handlers associated with those listeners will be executed.
+ReactQ, when integrated into your application, allows you to declare (trigger) that an event has happened. There is no
+requirement for any listeners to be subscribed to a given event, it is completely opt-in. If listeners are subscribed,
+they will be handed the event's context (object) and any handlers associated with the listener will be executed.
 
-The classic use-case is to trigger an event and have loggers setup to log that event. This mitigates the need to write
-logging code directly to your model and/or service classes.
+Multiple listeners can be subscribed to a single event. Event handlers are executed in subscription order by default;
+however, this can be controlled by setting explicit numeric priorities when subscribing the listeners. Higher numbers
+give a higher priority. Higher priority items are executed ahead of lower priority items. In other words, an event
+handler with a priority of 10 will be executed before an event handler with a priority of 5, even if the latter was
+subscribed earlier.
 
-Multiple listeners can be subscribed to a single event. Listener event handlers are executed in order of subscription
-by default; however, this can be controlled by setting explicit priorities when subscribing the listeners.
+The classic publish/subscribe use-case is to trigger an event and have an event handler serve as a logger to log the
+details of that event. Suppose you wanted to record a log of every article that has been published through a CMS. In
+this case, the context object would be the "article" object itself which might have accessible properties such as:
 
-A shortcut to subscribing a single listener to multiple events is to specify an event pattern to subscribe to. In other
-words, instead of subscribing to a single event represented as a string, you will subscribe to a set of (one or more)
-events that match a pattern. These patterns are similar to jQuery attribute selectors.
+1. dateTimePublished
+2. modifiedBy
+
+The logger would access these properties and record them to a storage backend. This mitigates the need to write logging
+code directly to your model and/or service classes, allows the event handling to be tested in isolation, and allows for
+flexible and well-defined extension points.
 
 From an extremely academic perspective, at work here is the observer (publish/subscribe) pattern, also known as signals
 and slots. See http://en.wikipedia.org/wiki/Signals_and_slots and http://en.wikipedia.org/wiki/Publish/subscribe and
@@ -45,12 +53,17 @@ task, the syntax is the same simple-chainable internal DSL.
 **2. Honors priority**: ReactQ, in addition to allowing callbacks to serve as event handlers, it allows a priority
 to be associated with the event handler for cases when you need that level of granularity.
 
-**3. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
+**3. jQuery-like attribute selectors**: A shortcut to subscribing a single listener to multiple events is to specify
+an event selector pattern. In other words, instead of subscribing to a single event represented as a string, you will
+subscribe to a set of (one or more) events that match a pattern. These patterns are similar to jQuery attribute
+selectors.
+
+**4. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
 component (built for Zend Framework 2).
 
-**4. Testable**: ReactQ is fully unit-tested using PHPUnit.
+**5. Testable**: ReactQ is fully unit-tested using PHPUnit.
 
-**5. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
+**6. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
 should help to mitigates potential hidden dependency issues. You can of course choose to use your own global registry
 and pass ReactQ around that way if you feel the need; however, dependency injection is the cleaner, more maintainable,
 and easier to debug methodology, but YMMV.
