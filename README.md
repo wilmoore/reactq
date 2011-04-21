@@ -89,7 +89,7 @@ Installing
 
 *replace "{path/to/your/vendor/directory}" the path to your vendor library directory*
  
-**Get the entire source repository:**
+**Get the entire source tree:**
 
     $ git clone https://github.com/wilmoore/reactq.git {path/to/your/vendor/directory}/reactq
 
