@@ -19,6 +19,6 @@ class Version {
     /**
      * Current Version
      */
-    const VERSION = '0.1.0-beta';
+    const VERSION = '0.1.1';
 
 }
