@@ -45,28 +45,28 @@ http://en.wikipedia.org/wiki/Event-driven_programming
 Features
 --------
 
-**1. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
-provide extreme flexibility. ReactQ can be used for trivial tasks like logging and caching. It can also be used for
-non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
-task, the syntax is the same simple-chainable internal DSL.
-                                                                             
-**2. Honors priority**: ReactQ, in addition to allowing callbacks to serve as event handlers, it allows a priority
-to be associated with the event handler for cases when you need that level of granularity.
-
-**3. jQuery-like attribute selectors**: A shortcut to subscribing a single listener to multiple events is to specify
+**1. jQuery-like attribute selectors**: A shortcut to subscribing a single listener to multiple events is to specify
 an event selector pattern. In other words, instead of subscribing to a single event represented as a string, you will
 subscribe to a set of (one or more) events that match a pattern. These patterns are similar to jQuery attribute
 selectors.
 
-**4. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
-component (built for Zend Framework 2).
+**2. Honors priority**: ReactQ, in addition to allowing callbacks to serve as event handlers, it allows a priority
+to be associated with the event handler for cases when you need that level of granularity.
 
-**5. Testable**: ReactQ is fully unit-tested using PHPUnit.
+**3. Flexibility with minimal ceremony**: ReactQ was built with ease-of-integration in mind; however, it is meant to
+provide extreme flexibility. ReactQ can be used for trivial tasks like logging and caching. It can also be used for
+non-trivial tasks like data filtering, request/response header manipulation, or access-rights checking. Whatever the
+task, the syntax is the same simple-chainable internal DSL.
 
-**6. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
+**4. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
 should help to mitigates potential hidden dependency issues. You can of course choose to use your own global registry
 and pass ReactQ around that way if you feel the need; however, dependency injection is the cleaner, more maintainable,
 and easier to debug methodology, but YMMV.
+
+**5. Testable**: ReactQ is fully unit-tested using PHPUnit.
+
+**6. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
+component (built for Zend Framework 2).
 
 
 Requirements
