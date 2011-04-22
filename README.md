@@ -167,10 +167,10 @@ Changelog
 -   **2011-04-21**: Released version 0.2.0. This release added a new Zend Framework Application Resource Plugin
     for ReactQueue configuration.
 
-        *application.ini*
+        -   application.ini
         resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
 
-        *events.yml*
+        -   events.yml
         "article.published":
           callback:    mybiz\domain\article\event\Published
           priority:    1
