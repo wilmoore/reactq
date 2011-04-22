@@ -171,12 +171,12 @@ Changelog
     resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
 
     **events.yml**
-        "article.published":
-          callback:    mybiz\domain\article\event\Published
-          priority:    1
-          description: >
-            Acknowledges that the context article has been published, copies the history,
-            warms the cache, adds it to the search index, then sends an email notification.
+    "article.published":
+      callback:    mybiz\domain\article\event\Published
+      priority:    1
+      description: >
+        Acknowledges that the context article has been published, copies the history,
+        warms the cache, adds it to the search index, then sends an email notification.
 
         "article.unpublished":
           callback:    mybiz\domain\article\event\Unpublished
