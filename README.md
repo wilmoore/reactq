@@ -7,7 +7,7 @@ ReactQ: A minimalist DSL for pub/sub in PHP
 **Contributors**:   See Contributors section below  
 **Copyright**:      2011-2011   
 **License**:        MIT License     
-**Latest Version**: 0.1.1       
+**Latest Version**: 0.2.0
 **Release Date**:   April 18th 2011 
 
 
@@ -163,6 +163,27 @@ and can be updated by executing the following command:
 
 Changelog
 ---------
+
+-   **2011-04-21**: Released version 0.2.0. This release added a new Zend Framework Application Resource Plugin
+    for ReactQueue configuration.
+
+    *application.ini*
+    resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
+
+    *events.yml*
+    "article.published":
+      callback:    mybiz\domain\article\event\Published
+      priority:    1
+      description: >
+        Acknowledges that the context article has been published, copies the history,
+        warms the cache, adds it to the search index, then sends an email notification.
+
+    "article.unpublished":
+      callback:    mybiz\domain\article\event\Unpublished
+      priority:    1
+      description: >
+        Acknowledges that the context article has been unpublished, removes it from the
+        search index, deletes the cache, then sends an email notification.
 
 -   **2011-04-21**: Released version 0.1.1. This release includes only minor documentation updates and cleanup.
 
