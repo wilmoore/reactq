@@ -168,7 +168,7 @@ Changelog
     for ReactQueue configuration.
 
     **application.ini**
-        resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
+    resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
 
     **events.yml**
         "article.published":
