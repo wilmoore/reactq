@@ -167,23 +167,23 @@ Changelog
 -   **2011-04-21**: Released version 0.2.0. This release added a new Zend Framework Application Resource Plugin
     for ReactQueue configuration.
 
-    *application.ini*
-    resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
+        *application.ini*
+        resources.reactqueue.config.path = CONFIGS_PATH "/reactq/events.yml"
 
-    *events.yml*
-    "article.published":
-      callback:    mybiz\domain\article\event\Published
-      priority:    1
-      description: >
-        Acknowledges that the context article has been published, copies the history,
-        warms the cache, adds it to the search index, then sends an email notification.
+        *events.yml*
+        "article.published":
+          callback:    mybiz\domain\article\event\Published
+          priority:    1
+          description: >
+            Acknowledges that the context article has been published, copies the history,
+            warms the cache, adds it to the search index, then sends an email notification.
 
-    "article.unpublished":
-      callback:    mybiz\domain\article\event\Unpublished
-      priority:    1
-      description: >
-        Acknowledges that the context article has been unpublished, removes it from the
-        search index, deletes the cache, then sends an email notification.
+        "article.unpublished":
+          callback:    mybiz\domain\article\event\Unpublished
+          priority:    1
+          description: >
+            Acknowledges that the context article has been unpublished, removes it from the
+            search index, deletes the cache, then sends an email notification.
 
 -   **2011-04-21**: Released version 0.1.1. This release includes only minor documentation updates and cleanup.
 
