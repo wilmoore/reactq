@@ -83,7 +83,7 @@ Installing
 
     Not Yet Supported
 
-**Git Submodule (use this if your project's source is tracked in a Git submodule):**
+**Git submodule:**
 
     $ git submodule add https://github.com/wilmoore/reactq.git {path/to/your/vendor/directory}/reactq
 
