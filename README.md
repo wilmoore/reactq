@@ -7,7 +7,7 @@ ReactQ: A minimalist DSL for pub/sub in PHP
 **Contributors**:   See Contributors section below  
 **Copyright**:      2011-2011   
 **License**:        MIT License     
-**Latest Version**: 0.2.0
+**Latest Version**: 0.2.0     
 **Release Date**:   April 18th 2011 
 
 
