@@ -59,7 +59,7 @@ non-trivial tasks like data filtering, request/response header manipulation, or 
 task, the syntax is the same simple-chainable internal DSL.
 
 **4. No Global Registry**: ReactQ is quite opinionated in this regard as it does not provide a global registry. This
-should help to mitigates potential hidden dependency issues. You can of course choose to use your own global registry
+should help to mitigate potential hidden dependency issues. You can of course choose to use your own global registry
 and pass ReactQ around that way if you feel the need; however, dependency injection is the cleaner, more maintainable,
 and easier to debug methodology, but YMMV.
 
