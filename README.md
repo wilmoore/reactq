@@ -134,18 +134,18 @@ Running Tests
 
 **You don't yet have the source checked-out**:
 
-    $ git clone git://github.com/wilmoore/reactq.git projects/reactq
-    $ cd $!
+    $ git clone git://github.com/wilmoore/reactq.git {path/to/your/projects/directory}/reactq
+    $ cd !$
     $ phpunit --testdox
 
 **You already have the source checked-out**:
 
-    $ cd projects/reactq
+    $ cd {path/to/your/projects/directory}/reactq
     $ phpunit --testdox
 
 **You already have the source checked-out and you want to see verbose output rather than pretty output**:
 
-    $ cd projects/reactq
+    $ cd {path/to/your/projects/directory}/reactq
     $ phpunit --verbose
 
 
@@ -160,9 +160,13 @@ and can be updated by executing the following command:
 *   Zend\\EventManager
 *   Symfony\\Component\\ClassLoader
 
+NOTE: you only need to be concerned with this if you are contributing code
+
 
 Changelog
 ---------
+
+-   **2011-07-21**: No version change. Did some general cleanup around the README.
 
 -   **2011-04-21**: Released version 0.2.0. This release added a new Zend Framework Application Resource Plugin
     for ReactQueue configuration.
