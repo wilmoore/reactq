@@ -66,7 +66,7 @@ and easier to debug methodology, but YMMV.
 **5. Testable**: ReactQ is fully unit-tested using PHPUnit.
 
 **6. Built on the shoulders of giants**: ReactQ currently wraps the well-tested and mature Zend\EventManager
-component (built for Zend Framework 2).
+component (built for Zend Framework 2). FYI, I may factor out Zend\EventManager as it is currently very difficult to track updates given Zend\EventManager does not have it's own repo (you need to checkout the entire project) and there is _currently_ no way to manage specific ZF components without taking the entire project (besides "cp").
 
 
 Requirements
