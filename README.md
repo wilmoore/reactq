@@ -1,7 +1,7 @@
 ReactQ: A minimalist DSL for pub/sub in PHP
 ===========================================
 
-**Homepage**:       [http://reactq.com](http://reactq.com)  
+**Homepage**:       [https://github.com/wilmoore/reactq](https://github.com/wilmoore/reactq)  
 **Git**:            [http://github.com/wilmoore/reactq](http://github.com/wilmoore/reactq)  
 **Author**:         Wil Moore III   
 **Contributors**:   See Contributors section below  
